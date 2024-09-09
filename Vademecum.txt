@@ -1,0 +1,11 @@
+APPLICAZIONE DI TEST DEL FRAMEWROK VAADIN
+LINKS:
+- TUTORIAL: 								https://vaadin.com/docs/latest/getting-started
+- CREAZIONE PROGETTO (Vaadin Start): 		https://vaadin.com/docs/latest/getting-started/project
+- IMPORTAZIONE DEL PROGETTO (Eclipse):		https://vaadin.com/docs/latest/getting-started/import/eclipse
+- ESECUZIONE DELL'APPLICAZIONE (Eclipse):	https://vaadin.com/docs/latest/getting-started/run/eclipse
+- AGGIUNGERE UNA VIEW:						https://vaadin.com/docs/latest/getting-started/views
+
+##################
+# CREAZIONE VIEW #
+##################
