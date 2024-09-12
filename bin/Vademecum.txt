@@ -1,0 +1,79 @@
+APPLICAZIONE DI TEST DEL FRAMEWROK VAADIN
+LINKS:
+- TUTORIAL: 								https://vaadin.com/docs/latest/getting-started
+- CREAZIONE PROGETTO (Vaadin Start): 		https://vaadin.com/docs/latest/getting-started/project
+- IMPORTAZIONE DEL PROGETTO (Eclipse):		https://vaadin.com/docs/latest/getting-started/import/eclipse
+- ESECUZIONE DELL'APPLICAZIONE (Eclipse):	https://vaadin.com/docs/latest/getting-started/run/eclipse
+- AGGIUNGERE UNA VIEW:						https://vaadin.com/docs/latest/getting-started/views
+- VAADIN TUTORIAL:							https://vaadin.com/docs/latest/getting-started/tutorial
+- SETUP PROGETTO:							https://vaadin.com/docs/latest/getting-started/tutorial/project-setup
+
+##################
+# CREAZIONE VIEW #
+##################
+
+FLOW/JAVA VIEW (utilzzabile in entrambi i layout di progetto):
+Classi Java con annotazione @Route che estendono com.vaadin.flow.component.Component o una sottoclasse (tipicamente un layout).
+Si può creare una view ovunque nel progetto ma per chiarezza si inseriscono src/main/java/com/example/application/views creando un package.
+Estendere VerticalLayout significa che gli elementi della pagina vengono aggiunti verticalmente (uno sotto l'altro).
+
+Codice:
+@Route("todo") => la view sarà disponibile a http://localhost:8080/todo
+
+var addButton = new Button("Add"); 
+addButton.addClickListener(click -> { 
+  [...]
+}); => Aggiungo un listener al button (in questo caso onclick)
+addButton.addClickShortcut(Key.ENTER); => Scorciatioia per il click sul button
+
+add( 
+      [...]
+      new HorizontalLayout(
+        [...]
+      )
+    ); => (Esteso VerticalLayout) Aggiungo gli elementi uno sotto l'altro. Se voglio due elementi sulla stessa riga dichiaro un HorizontalLayout(...)
+	
+	
+HILLA/REACT VIEW (utilizzabile solo per layout Hilla): 
+Componenti React situati nella cartella src/main/frontend/views con file-based routing (il routing dipende dalla posizione dei file nella cartella)
+
+Codice:
+export const config: ViewConfig = { 
+    menu: { order: 1, icon: 'line-awesome/svg/tasks-solid.svg' },
+    title: "Vaadin Todo"
+} => Parametri aggiuntivi per la configurazione della view
+
+function addTask() { 
+	todos.value = [...todos.value, task.value]
+	task.value = ""
+} => Funzione che verrà associata alla proprietà onClick del button
+
+return <VerticalLayout theme="spacing padding">
+        <VerticalLayout>
+            {todos.value.map((todo,index) => <Checkbox key={index} label={todo}/>)} 
+        </VerticalLayout>
+        <HorizontalLayout theme="spacing">
+            <TextField value={task.value} onChange={e => task.value = e.target.value}/> 
+            <Button onClick={addTask}>Add</Button> 
+        </HorizontalLayout>
+    </VerticalLayout>
+	=> Ritorno la lista dei task mappata come checkbox + label sulla stessa riga e il campo descrizione + add button (con onClick) sulla stessa riga a capo
+	
+	
+###################
+# VAADIN TUTORIAL #
+###################
+
+DOCUMENTAZIONE SPRING: https://spring.io/projects/spring-boot
+DOCUMENTAZIONE REACT: https://react.dev
+
+CONCETTi CHIAVE:
+- View: pagina dell'interfaccia utente di un'applicazione ovvero un insieme elementi che l'utente può visualizzare e con cui l'utente può interagire. In genere riempie un'intera scheda del browser o gran parte di essa.
+- Routing: mappatura delle view su diversi percorsi URL.
+- Layout: gli elementi visualizzati indipendentemente dalla view (es. intestazione e menù) vengono aggiunti a un layout. Un layout controlla anche dove viene eseguito il rendering della view al suo interno.	
+- Server push: meccanismo con cui il server può inviare dati al browser senza prima ricevere una richiesta da esso.
+- Security: misure adottate per proteggere l'applicazione dall'uso non autorizzato (include autenticazione e autorizzazione degli utenti).
+
+##################
+# SETUP PROGETTO #
+##################
