@@ -6,12 +6,17 @@ LINKS:
 - ESECUZIONE DELL'APPLICAZIONE (Eclipse):	https://vaadin.com/docs/latest/getting-started/run/eclipse
 - AGGIUNGERE UNA VIEW:						https://vaadin.com/docs/latest/getting-started/views
 - VAADIN TUTORIAL:							https://vaadin.com/docs/latest/getting-started/tutorial
+	- SETUP PROGETTO:						https://vaadin.com/docs/latest/getting-started/tutorial/project-setup
+	- BUILD A FLOW UI:						https://vaadin.com/docs/latest/getting-started/tutorial/flow
+		- FIRST VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/first-view
+		- SECOND VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/second-view
+
 
 ##################
 # CREAZIONE VIEW #
 ##################
 
-FLOW VIEW:
+FLOW/JAVA VIEW (utilzzabile in entrambi i layout di progetto):
 Classi Java con annotazione @Route che estendono com.vaadin.flow.component.Component o una sottoclasse (tipicamente un layout).
 Si può creare una view ovunque nel progetto ma per chiarezza si inseriscono src/main/java/com/example/application/views creando un package.
 Estendere VerticalLayout significa che gli elementi della pagina vengono aggiunti verticalmente (uno sotto l'altro).
@@ -33,7 +38,7 @@ add(
     ); => (Esteso VerticalLayout) Aggiungo gli elementi uno sotto l'altro. Se voglio due elementi sulla stessa riga dichiaro un HorizontalLayout(...)
 	
 	
-REACT VIEW:
+HILLA/REACT VIEW (utilizzabile solo per layout Hilla): 
 Componenti React situati nella cartella src/main/frontend/views con file-based routing (il routing dipende dalla posizione dei file nella cartella)
 
 Codice:
@@ -57,3 +62,76 @@ return <VerticalLayout theme="spacing padding">
         </HorizontalLayout>
     </VerticalLayout>
 	=> Ritorno la lista dei task mappata come checkbox + label sulla stessa riga e il campo descrizione + add button (con onClick) sulla stessa riga a capo
+	
+	
+###################
+# VAADIN TUTORIAL #
+###################
+
+DOCUMENTAZIONE SPRING: https://spring.io/projects/spring-boot
+DOCUMENTAZIONE REACT: https://react.dev
+
+CONCETTi CHIAVE:
+- View: pagina dell'interfaccia utente di un'applicazione ovvero un insieme elementi che l'utente può visualizzare e con cui l'utente può interagire. In genere riempie un'intera scheda del browser o gran parte di essa.
+- Routing: mappatura delle view su diversi percorsi URL.
+- Layout: gli elementi visualizzati indipendentemente dalla view (es. intestazione e menù) vengono aggiunti a un layout. Un layout controlla anche dove viene eseguito il rendering della view al suo interno.	
+- Server push: meccanismo con cui il server può inviare dati al browser senza prima ricevere una richiesta da esso.
+- Security: misure adottate per proteggere l'applicazione dall'uso non autorizzato (include autenticazione e autorizzazione degli utenti).
+
+
+##################
+# SETUP PROGETTO #
+##################
+
+Flow consente di scrivere interfacce utente utilizzando Java lato server (backend). Il frontend che può essere modificato quando strettamente necessario.
+Hilla segue l'approccio tradizionale in cui l'interfaccia utente viene eseguita esclusivamente nel browser.
+Perciò nelle applicazione Vaadin piuttosto che riferirsi a frontend e backend si preferisce distinguere fra Presentation e Application Layer.
+
+ARCHITETTURA DELL'APPLICAZIONE (CHAT):
+- User’s web browser (Container)
+- Spring Boot web application (Container)
+	- Chat (Component)
+		- Application Programming Interface (API): Chiamate dell'interfaccia utente
+		- Service Provider Interface (SPI): Memorizzare e recuperare i messaggi
+	- In-memory Storage (Component)
+	
+Se l'interfaccia utente viene implementata con Hilla/React, Vaadin genera un client TypeScript che può essere utilizzato per richiamare le API direttamente dal browser.
+Vaadin si occupa dei controller REST.
+Se l'interaccia utente viene implementata con Flow/Java bisogna costruire la Flow UI, un componente che usa le API della Chat all'interno della Java Virtual Machine (JVM) e non espone API pubbliche utilizzabili da altri componenti.
+Vaadin si occupa del rendering dell'interfaccia utente nel browser e della comunicazione tra il browser e il server.
+
+STRUTTURA DEL PROGETTO (Cartelle e file):
+- Nel package com.example.application.chat si trovano i componenti della chat in cui le API consistono in classi e metodi pubblici (es. classe ChatService).
+	- Il sottopackage com.example.application.chat.spi contiene le interfacce e le classi che queste necessitano.
+- Nel package com.example.application.inmemorystorage risiedono i componenti per il salvataggio in memoria dei messaggi che non avendo API pubbliche consistono in classi package-private.
+- Nel package com.example.application troviamo la classe Application che rappresenta l'intera applicazione. Questa classe setta il contesto applicativo dell'applicazione che interconnette i componenti assieme.
+
+
+###############################
+# BUILD A FLOW UI: FIRST VIEW #
+###############################
+
+ROUTING: 
+@Route("<path>")
+Il modo più semplice per passare parametri all'interno di una route Vaadin è implementare l'interfaccia HasUrlParameter che definisce un parametro in coda alla URL.
+Il tipo del parametro deve essere uno fra Long, Integer, String e Boolean.
+Documentazione Routing: https://vaadin.com/docs/latest/flow/routing
+
+SERVER PUSH:
+@Push nella Application Shell Class (Application che implementa l'interfaccia AppShellConfigurator)
+Il modo più semplice per triggerare il server push è utilizzare il metodo UI.access(), che può essere chiamato da ogni thread. Il metodo prende come parametro una lambda o un puntatore ad una funzione e la eseguirà nel momento opportuno.
+Vaadin si assicurerà che la sessione sia sospesa correttamente durante l'aggiornamento dell'interfaccia utente. Una volta che il metodo restituisce, Vaadin invierà automaticamente gli aggiornamenti al browser.
+Documentazione Server Push: https://vaadin.com/docs/latest/flow/advanced/server-push
+
+FLOW UI:
+Possiamo vederlo come un albero di component che vengono notificati quando sono aggiunti (attached) o rimossi (detached) dall'albero.
+Un  component può eseguire del codice quando questo accade facendo overriding dei metodi onAttach() e onDetach() forniti dalla classe Component (classe astratta di tutti i components).
+E' possibile anche utilizzare i metodi addAttachListener() e addDetachListener() per registrare dei listener che verranno notificati quando un component è aggiunto o rimosso.
+ATTENZIONE: Per non incorrere in memory leak, quando si vuole registrare un listener su un oggetto il cui ciclo di vita è indipendente dalla view, bisogna registrarlo dopo che la view è aggiunta all'albero e annullare la registrazione quando la view viene rimossa.
+Documentazione sui cicli di vita: https://vaadin.com/docs/latest/flow/create-ui/creating-components/lifecycle-callbacks
+Documentazione sui Flux: https://projectreactor.io/docs/core/release/reference
+
+[Vedi file 
+	src\main\java\com\example\application\views\channel\ChannelView.java => View
+	src\main\java\com\example\application\Application.java => Application Shell Class
+]
