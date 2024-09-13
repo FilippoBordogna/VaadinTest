@@ -2,6 +2,7 @@ package com.example.application.views.lobby;
 
 import com.example.application.chat.Channel;
 import com.example.application.chat.ChatService;
+import com.example.application.views.MainLayout;
 import com.example.application.views.channel.ChannelView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -16,9 +17,9 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 
-@Route(value = "") // Default view
+@Route(value = "", layout = MainLayout.class) // http://localhost:8080 - MainLayout (AppLayout)
 @PageTitle("Lobby") // Page title
-public class LobbyView extends VerticalLayout {
+public class LobbyView extends VerticalLayout { // Vertical Layout
 
     private final ChatService chatService;
     private final VirtualList<Channel> channels;
