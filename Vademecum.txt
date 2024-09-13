@@ -11,6 +11,7 @@ LINKS:
 		- FIRST VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/first-view
 		- SECOND VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/second-view
 		- ADD A LAYOUT:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/layout
+		- ADD A MESSAGE HISTORY:			https://vaadin.com/docs/latest/getting-started/tutorial/flow/message-history
 
 
 ##################
@@ -150,4 +151,23 @@ Reindirizzare: event.forwardTo(LobbyView.class);
 [Vedi file 
 	src\main\java\com\example\application\views\lobby\LobbyView.java => Lobby View
 	src\main\java\com\example\application\views\channel\ChannelView.java => Channel View (Aggiunto solo reindirizzamento)
+]
+
+
+#################################
+# BUILD A FLOW UI: ADD A LAYOUT #
+#################################
+
+AppLayout è un layout abbastanza comune nelle applicazioni. Questo divide la UI in 3 parti:
+- Barra di navigazione orizzontale (navbar): parte superiore dello schermo oppure accanto al drawer
+- Un menù laterale di navigazione (drawer)
+- Area del contenuto viene effettuato il rendering della vista
+Documentazione AppLayout: https://vaadin.com/docs/latest/components/app-layout
+Documentazione Side Navigation: https://vaadin.com/docs/latest/components/side-nav
+
+Titolo di una pagina statica: @PageTitle
+Il titolo di una pagina dinamica è settato implementando l'interfaccia HasDynamicTitle fornita da Vaadin. 
+
+[Vedi file 
+	src\main\java\com\example\application\views\MainLayout.java => Layout Principale
 ]
