@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.application.chat.ChatService;
 import com.example.application.chat.Message;
+import com.example.application.views.lobby.LobbyView;
 
 import reactor.core.Disposable;
 
@@ -17,8 +18,7 @@ import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.AttachEvent;
 
-@Route("channel")
-//@Route(value = "channel") 
+@Route(value = "channel") 
 public class ChannelView extends VerticalLayout implements HasUrlParameter<String> { 
 	// Extending VerticalLayout the items are added (add() function) one below the other
 	// Implementing HasUrlParameter<String> we accept an URL parameter of type String (the channel ID)
@@ -47,9 +47,10 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
     public void setParameter(BeforeEvent event, String channelId) { 
     	// Provided by the HasUrlParameter interface: every time the parameter changes this function is called
     	if (chatService.channel(channelId).isEmpty()) {
-            throw new IllegalArgumentException("Invalid channel ID"); 
+            event.forwardTo(LobbyView.class); 
+        } else {
+            this.channelId = channelId;
         }
-        this.channelId = channelId;
     }
     
     private void sendMessage(String message) {
