@@ -10,6 +10,7 @@ LINKS:
 	- BUILD A FLOW UI:						https://vaadin.com/docs/latest/getting-started/tutorial/flow
 		- FIRST VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/first-view
 		- SECOND VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/second-view
+		- ADD A LAYOUT:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/layout
 
 
 ##################
@@ -132,6 +133,21 @@ Documentazione sui cicli di vita: https://vaadin.com/docs/latest/flow/create-ui/
 Documentazione sui Flux: https://projectreactor.io/docs/core/release/reference
 
 [Vedi file 
-	src\main\java\com\example\application\views\channel\ChannelView.java => View
+	src\main\java\com\example\application\views\channel\ChannelView.java => Channel View
 	src\main\java\com\example\application\Application.java => Application Shell Class
+]
+
+
+################################
+# BUILD A FLOW UI: SECOND VIEW #
+################################
+
+Titolo della pagina: @PageTitle("<name>")
+
+Creare un link: return new RouterLink(<link-text>, <navigator-target(class)>, <url-parameter>);
+Reindirizzare: event.forwardTo(LobbyView.class); 
+
+[Vedi file 
+	src\main\java\com\example\application\views\lobby\LobbyView.java => Lobby View
+	src\main\java\com\example\application\views\channel\ChannelView.java => Channel View (Aggiunto solo reindirizzamento)
 ]
