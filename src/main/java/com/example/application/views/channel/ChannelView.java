@@ -6,6 +6,7 @@ import java.util.List;
 import com.example.application.chat.ChatService;
 import com.example.application.chat.Message;
 import com.example.application.views.lobby.LobbyView;
+import com.example.application.views.MainLayout;
 
 import reactor.core.Disposable;
 
@@ -14,18 +15,20 @@ import com.vaadin.flow.component.messages.MessageList;
 import com.vaadin.flow.component.messages.MessageListItem;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEvent;
+import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.component.AttachEvent;
 
-@Route(value = "channel") 
-public class ChannelView extends VerticalLayout implements HasUrlParameter<String> { 
+@Route(value = "channel", layout = MainLayout.class) // http://localhost:8080/channel/<channel-id> - MainLayout(AppLayout)
+public class ChannelView extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle { // Vertical Layout + Parameter in the URL + Dynamic Title
 	// Extending VerticalLayout the items are added (add() function) one below the other
 	// Implementing HasUrlParameter<String> we accept an URL parameter of type String (the channel ID)
 
 	private final ChatService chatService;
 	private final MessageList messageList;
-	private String channelId;
+	private String channelId; // ID of the Channel
+	 private String channelName; // Name of the Channel
 	private final List<Message> receivedMessages = new ArrayList<>(); // List of messages received
 	
 	public ChannelView(ChatService chatService) { // Injected by Spring
@@ -46,11 +49,11 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
     @Override
     public void setParameter(BeforeEvent event, String channelId) { 
     	// Provided by the HasUrlParameter interface: every time the parameter changes this function is called
-    	if (chatService.channel(channelId).isEmpty()) {
-            event.forwardTo(LobbyView.class); 
-        } else {
-            this.channelId = channelId;
-        }
+    	chatService.channel(channelId).ifPresentOrElse(
+                channel -> this.channelName = channel.name(), // If the channel ID is valid, store the name in the channelName field
+                () -> event.forwardTo(LobbyView.class) // If the channel ID is invalid, navigate back to the lobby view
+        );
+        this.channelId = channelId;
     }
     
     private void sendMessage(String message) {
@@ -87,5 +90,10 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
     protected void onAttach(AttachEvent attachEvent) { // Method that is called when the component in attached to a UI
         var subscription = subscribe(); 
         addDetachListener(event -> subscription.dispose()); // Delete the subscription when detached from the UI
+    }
+    
+    @Override
+    public String getPageTitle() {
+        return channelName;
     }
 }
