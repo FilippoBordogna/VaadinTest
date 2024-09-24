@@ -12,6 +12,7 @@ LINKS:
 		- SECOND VIEW:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/second-view
 		- ADD A LAYOUT:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/layout
 		- ADD A MESSAGE HISTORY:			https://vaadin.com/docs/latest/getting-started/tutorial/flow/message-history
+		- SECURITY:							https://vaadin.com/docs/latest/getting-started/tutorial/flow/security
 
 ##################
 # CREAZIONE VIEW #
@@ -171,6 +172,7 @@ Il titolo di una pagina dinamica è settato implementando l'interfaccia HasDynam
 	src\main\java\com\example\application\views\MainLayout.java => Layout Principale
 ]
 
+
 #############################################
 # BUILD A FLOW UI: ADD A MESSAGE TO HISTORY #
 #############################################
@@ -182,4 +184,38 @@ Questo funge da meccanismo di sincronizzazione dei thread, poiché Vaadin si ass
 [Vedi file 
 	src\main\java\com\example\application\util\LimitedSortedAppendOnlyList.java => LimitedSortedAppendOnlyList object
 	src\main\java\com\example\application\views\channel\ChannelView.java => Channel View (Aggiunto meccanismo di cronologia con LimitedSortedAppendOnlyList obj)
+]
+
+
+#############################
+# BUILD A FLOW UI: SECURITY #
+#############################
+
+Per utilizzare Spring Security bisogna aggiungere alle dipendenze del file pom.xml:
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-security</artifactId>
+</dependency>
+
+Per definire i ruoli bisogna creare la classe Roles in src\main\java\com\example\application\security che specifica i ruoli come segue:
+public static final String USER = "USER";
+public static final String ADMIN = "ADMIN";
+
+Vaadin utilizza la classe base VaadinWebSecurity per configurare la sicurezza e proteggere le view e i service dell'applicazione.
+Documentazione Security: https://vaadin.com/docs/latest/flow/security
+
+Per default, Vaadin nega l'accesso a tutte le view a meno che sia specificato altrimenti.
+Le annotazioni @PermitAll e @AnonymousAllowed permettono rispettivamente l'accesso agli utenti e a utenti e anonimi.
+Per default, Vaadin permette l'accesso a tutti i service a meno che sia specificato altrimenti.
+L'annotazione @RolesAllowed(Roles.<ROLE-NAME>) protegge dall'accesso di utenti con altri ruoli.
+
+La classe AuthenticationContext permette di nascondere dei componenti agli utenti che non possono utilizzarli.
+
+[Vedi file 
+	pom.xml => Aggiunta la dipendenza a Spring Security
+	src\main\java\com\example\application\views\login\LoginView.java => Login View
+	src\main\java\com\example\application\security\Roles.java => Definizione dei ruoli
+	src\main\java\com\example\application\views\channel\ChannelView.java => Aggiunti i permessi di accesso alla view agli utenti
+	src\main\java\com\example\application\views\lobby\LobbyView.java => Aggiunti i permessi di accesso alla view agli utenti + Componenti nascosti per certi utenti
+	src\main\java\com\example\application\chat\ChatService.java => Ristretto l'accesso al servizio e alla creazione dei canali ai soli ruoli specificati + nome utente messaggi
 ]
