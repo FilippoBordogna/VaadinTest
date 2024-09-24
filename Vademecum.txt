@@ -13,7 +13,6 @@ LINKS:
 		- ADD A LAYOUT:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/layout
 		- ADD A MESSAGE HISTORY:			https://vaadin.com/docs/latest/getting-started/tutorial/flow/message-history
 
-
 ##################
 # CREAZIONE VIEW #
 ##################
@@ -170,4 +169,17 @@ Il titolo di una pagina dinamica è settato implementando l'interfaccia HasDynam
 
 [Vedi file 
 	src\main\java\com\example\application\views\MainLayout.java => Layout Principale
+]
+
+#############################################
+# BUILD A FLOW UI: ADD A MESSAGE TO HISTORY #
+#############################################
+
+Scenario: Un messaggio arriva all'interno del live streaming in un thread mentre la cronologia viene recuperata in un altro.
+All'interno del metodo receiverMessages() tutte le interazioni sia con l'interfaccia utente che con l'elenco dei messaggi ricevuti avvengono all'interno di una chiamata a UI.access(). 
+Questo funge da meccanismo di sincronizzazione dei thread, poiché Vaadin si assicurerà che solo un thread alla volta possa accedere alla stessa istanza dell'interfaccia utente.
+
+[Vedi file 
+	src\main\java\com\example\application\util\LimitedSortedAppendOnlyList.java => LimitedSortedAppendOnlyList object
+	src\main\java\com\example\application\views\channel\ChannelView.java => Channel View (Aggiunto meccanismo di cronologia con LimitedSortedAppendOnlyList obj)
 ]
