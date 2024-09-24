@@ -99,6 +99,10 @@ public class ChatService {
             throw new InvalidChannelException();
         }
         
+        /*if (message.equals("fail")) {
+            throw new RuntimeException("I failed!");
+        }*/
+        
         var author = SecurityContextHolder.getContext().getAuthentication().getName(); 
         var msg = messageRepository.save(new NewMessage(channelId, clock.instant(), author, message));
         var result = sink.tryEmitNext(msg);
