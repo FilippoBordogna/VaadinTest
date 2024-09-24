@@ -218,4 +218,5 @@ La classe AuthenticationContext permette di nascondere dei componenti agli utent
 	src\main\java\com\example\application\views\channel\ChannelView.java => Aggiunti i permessi di accesso alla view agli utenti
 	src\main\java\com\example\application\views\lobby\LobbyView.java => Aggiunti i permessi di accesso alla view agli utenti + Componenti nascosti per certi utenti
 	src\main\java\com\example\application\chat\ChatService.java => Ristretto l'accesso al servizio e alla creazione dei canali ai soli ruoli specificati + nome utente messaggi
+	src\main\java\com\example\application\views\MainLayout.java => Aggiunta del logout
 ]
