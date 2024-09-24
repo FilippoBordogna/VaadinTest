@@ -1,10 +1,12 @@
 package com.example.application.views.channel;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import com.example.application.chat.ChatService;
 import com.example.application.chat.Message;
+import com.example.application.util.LimitedSortedAppendOnlyList;
 import com.example.application.views.lobby.LobbyView;
 import com.example.application.views.MainLayout;
 
@@ -28,12 +30,15 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
 	private final ChatService chatService;
 	private final MessageList messageList;
 	private String channelId; // ID of the Channel
-	 private String channelName; // Name of the Channel
-	private final List<Message> receivedMessages = new ArrayList<>(); // List of messages received
+	private String channelName; // Name of the Channel
+	private static final int HISTORY_SIZE = 20; // Shows only last 20 messages
+	private final LimitedSortedAppendOnlyList<Message> receivedMessages; // List of messages received
 	
 	public ChannelView(ChatService chatService) { // Injected by Spring
 	    this.chatService = chatService;
 	    setSizeFull(); // Set view width and height to 100%
+	    
+	    receivedMessages = new LimitedSortedAppendOnlyList<>(HISTORY_SIZE, Comparator.comparing(Message::sequenceNumber)); // Messages will be sorted by their sequence number
 	    
 	    messageList = new MessageList(); // Built-in component for displaying messages from different users
 	    messageList.setSizeFull();
@@ -80,9 +85,12 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
     }
     
     private Disposable subscribe() { // Method that subscribes to the service
-        var subscription = chatService
-                .liveMessages(channelId)
-                .subscribe(this::receiveMessages); // Call receiveMessages function when the Flux emits a new batch of messages 
+        var subscription = chatService.liveMessages(channelId)
+        							  .subscribe(this::receiveMessages); // Call receiveMessages function when the Flux emits a new batch of messages 
+        
+        var lastSeenMessageId = receivedMessages.getLast().map(Message::messageId).orElse(null); // If the list is empty we pass null as the latest message
+        receiveMessages(chatService.messageHistory(channelId, HISTORY_SIZE, lastSeenMessageId));
+        
         return subscription;  // Reference to the subscription. So we can cancel it when we don’t need it any longer
     }
     
