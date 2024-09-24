@@ -20,9 +20,13 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+
+import jakarta.annotation.security.PermitAll;
+
 import com.vaadin.flow.component.AttachEvent;
 
 @Route(value = "channel", layout = MainLayout.class) // http://localhost:8080/channel/<channel-id> - MainLayout(AppLayout)
+@PermitAll // Access permitted
 public class ChannelView extends VerticalLayout implements HasUrlParameter<String>, HasDynamicTitle { // Vertical Layout + Parameter in the URL + Dynamic Title
 	// Extending VerticalLayout the items are added (add() function) one below the other
 	// Implementing HasUrlParameter<String> we accept an URL parameter of type String (the channel ID)
