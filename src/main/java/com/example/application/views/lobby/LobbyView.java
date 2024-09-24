@@ -6,6 +6,7 @@ import com.example.application.security.Roles;
 import com.example.application.views.MainLayout;
 import com.example.application.views.channel.ChannelView;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -47,6 +48,8 @@ public class LobbyView extends VerticalLayout { // Vertical Layout
         addChannelButton = new Button("Add channel", event -> addChannel()); // Onclick the addChannel() function is called
         addChannelButton.setDisableOnClick(true); // The button is disabled after the first click to avoid triggering the button more than once
         addChannelButton.addClickShortcut(Key.ENTER);
+        // addChannelButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY); // Button Style
+        addChannelButton.setDisableOnClick(true);
         
         if (authenticationContext.hasRole(Roles.ADMIN)) { // Display the toolbar only if the user's role is ADMIN
             var toolbar = new HorizontalLayout(channelNameField, addChannelButton); // Displays components horizontally next to each other.
