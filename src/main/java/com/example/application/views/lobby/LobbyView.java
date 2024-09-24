@@ -2,6 +2,7 @@ package com.example.application.views.lobby;
 
 import com.example.application.chat.Channel;
 import com.example.application.chat.ChatService;
+import com.example.application.security.Roles;
 import com.example.application.views.MainLayout;
 import com.example.application.views.channel.ChannelView;
 import com.vaadin.flow.component.button.Button;
@@ -13,12 +14,17 @@ import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
+import com.vaadin.flow.spring.security.AuthenticationContext;
+
+import jakarta.annotation.security.PermitAll;
+
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
 
 @Route(value = "", layout = MainLayout.class) // http://localhost:8080 - MainLayout (AppLayout)
 @PageTitle("Lobby") // Page title
+@PermitAll // Access permitted
 public class LobbyView extends VerticalLayout { // Vertical Layout
 
     private final ChatService chatService;
@@ -26,7 +32,7 @@ public class LobbyView extends VerticalLayout { // Vertical Layout
     private final TextField channelNameField;
     private final Button addChannelButton;
 
-    public LobbyView(ChatService chatService) {
+    public LobbyView(ChatService chatService, AuthenticationContext authenticationContext) {
     	this.chatService = chatService;
         setSizeFull();
 
@@ -41,11 +47,13 @@ public class LobbyView extends VerticalLayout { // Vertical Layout
         addChannelButton = new Button("Add channel", event -> addChannel()); // Onclick the addChannel() function is called
         addChannelButton.setDisableOnClick(true); // The button is disabled after the first click to avoid triggering the button more than once
         addChannelButton.addClickShortcut(Key.ENTER);
-
-        var toolbar = new HorizontalLayout(channelNameField, addChannelButton); // Displays components horizontally next to each other.
-        toolbar.setWidthFull();
-        toolbar.expand(channelNameField);
-        add(toolbar);
+        
+        if (authenticationContext.hasRole(Roles.ADMIN)) { // Display the toolbar only if the user's role is ADMIN
+            var toolbar = new HorizontalLayout(channelNameField, addChannelButton); // Displays components horizontally next to each other.
+            toolbar.setWidthFull();
+            toolbar.expand(channelNameField);
+            add(toolbar);
+        }
     }
     
     private void refreshChannels() { // OnAttach called function
