@@ -4,6 +4,7 @@ import com.example.application.views.lobby.LobbyView;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.H2;
 import com.vaadin.flow.component.html.Header;
 import com.vaadin.flow.component.html.Span;
@@ -13,13 +14,16 @@ import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.spring.security.AuthenticationContext;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 
 public class MainLayout extends AppLayout { 
-
+	
+	private final AuthenticationContext authenticationContext;
     private H2 viewTitle; // Vaadin component representing the <h2> HTML element: it will contain the title of the current view
 
-    public MainLayout() {
+    public MainLayout(AuthenticationContext authenticationContext) {
+    	this.authenticationContext = authenticationContext;
         setPrimarySection(Section.DRAWER); // Makes the drawer fill the entire height of the screen, moving the navbar to the side of it.
         addNavbarContent();
         addDrawerContent();
@@ -33,7 +37,9 @@ public class MainLayout extends AppLayout {
         viewTitle = new H2();
         viewTitle.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE, LumoUtility.Flex.GROW); // CSS styling
 
-        var header = new Header(toggle, viewTitle); // Vaadin component representing the <header> HTML element
+        var logout = new Button("Logout " + authenticationContext.getPrincipalName().orElse(""), event -> authenticationContext.logout()); // Logout button
+
+        var header = new Header(toggle, viewTitle, logout);  // Vaadin component representing the <header> HTML element
         header.addClassNames(LumoUtility.AlignItems.CENTER, LumoUtility.Display.FLEX,LumoUtility.Padding.End.MEDIUM, LumoUtility.Width.FULL); // CSS styling
 
         addToNavbar(false, header); // The boolean flag set to false says to keep the header at the top even on mobile devices.
