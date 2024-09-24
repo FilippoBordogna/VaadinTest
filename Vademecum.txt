@@ -13,6 +13,8 @@ LINKS:
 		- ADD A LAYOUT:						https://vaadin.com/docs/latest/getting-started/tutorial/flow/layout
 		- ADD A MESSAGE HISTORY:			https://vaadin.com/docs/latest/getting-started/tutorial/flow/message-history
 		- SECURITY:							https://vaadin.com/docs/latest/getting-started/tutorial/flow/security
+		- STYLING:							https://vaadin.com/docs/latest/getting-started/tutorial/flow/styling
+		- USER EXPERIENCE TWEAKS:			https://vaadin.com/docs/latest/getting-started/tutorial/flow/ux-tweaks
 
 ##################
 # CREAZIONE VIEW #
@@ -219,4 +221,34 @@ La classe AuthenticationContext permette di nascondere dei componenti agli utent
 	src\main\java\com\example\application\views\lobby\LobbyView.java => Aggiunti i permessi di accesso alla view agli utenti + Componenti nascosti per certi utenti
 	src\main\java\com\example\application\chat\ChatService.java => Ristretto l'accesso al servizio e alla creazione dei canali ai soli ruoli specificati + nome utente messaggi
 	src\main\java\com\example\application\views\MainLayout.java => Aggiunta del logout
+]
+
+############################
+# BUILD A FLOW UI: STYLING #
+############################
+
+SALTATO
+
+###########################################
+# BUILD A FLOW UI: USER EXPERIENCE TWEAKS #
+########################################### 
+
+Documentazione UI Shortcuts: https://vaadin.com/docs/latest/flow/create-ui/shortcut
+
+Per creare il proprio handler di eccezioni bisogna implementare l'interfaccia ErrorHandler e registrarare il nuovo handler per ogni VaadinSession.
+Documentazione Custom Error Handling: https://vaadin.com/docs/latest/flow/advanced/custom-error-handler
+Documentazione Notification: https://vaadin.com/docs/latest/components/notification
+
+Ogni Spring Bean che implementa VaadinServiceInitListener (package com.vaadin.flow.server) riceverà un evento quando il servizio Vaadin viene inizializzato.
+Questo evento contiene un riferimento al servizio Vaadin stesso, il quale può essere utilizzato per registrare un nuovo SessionInitListener.
+L'implementazione consiste in:
+- Creare una nuova classe Spring @Configuration
+- All'interno della classe, dichiarare un Bean che implementa VaadinServiceInitListener
+- Usare le lambda per implementare VaadinServiceInitListener e SessionInitListener
+Documentazione Service Init Listener: https://vaadin.com/docs/latest/flow/advanced/service-init-listener
+
+[Vedi file 
+	src\main\java\com\example\application\views\lobby\LobbyView.java => Aggiunte shortcut Enter e DisableOnClick per AddButton
+	src\main\java\com\example\application\views\CustomErrorHandler.java => Gestore degli errori custom
+	src\main\java\com\example\application\views\ErrorHandlerConfig.java => Listener
 ]
