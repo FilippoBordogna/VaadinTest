@@ -1,5 +1,12 @@
 package com.example.application.views.lobby;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
+
 import com.example.application.chat.Channel;
 import com.example.application.chat.ChatService;
 import com.example.application.security.Roles;
@@ -7,6 +14,8 @@ import com.example.application.views.MainLayout;
 import com.example.application.views.channel.ChannelView;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -16,12 +25,15 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.router.RouterLink;
 import com.vaadin.flow.spring.security.AuthenticationContext;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import jakarta.annotation.security.PermitAll;
 
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Key;
+import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.avatar.Avatar;
 
 @Route(value = "", layout = MainLayout.class) // http://localhost:8080 - MainLayout (AppLayout)
 @PageTitle("Lobby") // Page title
@@ -38,6 +50,11 @@ public class LobbyView extends VerticalLayout { // Vertical Layout
         setSizeFull();
 
         channels = new VirtualList<>();
+        channels.addClassNames(
+        	    LumoUtility.Border.ALL, 
+        	    LumoUtility.Padding.SMALL, 
+        	    "channel-list"
+        	);
         channels.setRenderer(new ComponentRenderer<>(this::createChannelComponent));
         add(channels);
         expand(channels); // Expand the size of the channels list to use all available space in the page
@@ -48,7 +65,7 @@ public class LobbyView extends VerticalLayout { // Vertical Layout
         addChannelButton = new Button("Add channel", event -> addChannel()); // Onclick the addChannel() function is called
         addChannelButton.setDisableOnClick(true); // The button is disabled after the first click to avoid triggering the button more than once
         addChannelButton.addClickShortcut(Key.ENTER);
-        // addChannelButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY); // Button Style
+        addChannelButton.addThemeVariants(ButtonVariant.LUMO_PRIMARY); // Button Style
         addChannelButton.setDisableOnClick(true);
         
         if (authenticationContext.hasRole(Roles.ADMIN)) { // Display the toolbar only if the user's role is ADMIN
@@ -83,6 +100,50 @@ public class LobbyView extends VerticalLayout { // Vertical Layout
     
     private Component createChannelComponent(Channel channel) { // Renderer of VirtualList
     	// Create a link with the channel’s name. When clicked, it will navigate to the channel view and pass the channel’s ID as a URL parameter.
-        return new RouterLink(channel.name(), ChannelView.class, channel.id());
+    	var channelComponent = new Div(); // Create a Div (<div> html)
+        channelComponent.addClassNames("channel");
+
+        var avatar = new Avatar(channel.name());
+        avatar.setColorIndex(Math.abs(channel.id().hashCode() % 7)); //  Color the avatars
+        channelComponent.add(avatar);
+
+        var contentDiv = new Div();
+        contentDiv.addClassNames("content");
+        channelComponent.add(contentDiv); // Add the Div inside the other Div
+
+        var channelName = new Div();
+        channelName.addClassNames("name");
+        contentDiv.add(channelName);
+
+        var channelLink = new RouterLink(channel.name(), ChannelView.class, channel.id()); // Link to the channel
+        channelName.add(channelLink);
+
+        if (channel.lastMessage() != null) {
+            var lastMessageTimestamp = new Span(formatInstant(channel.lastMessage().timestamp(), getLocale())); 
+            lastMessageTimestamp.addClassNames("last-message-timestamp");
+            channelName.add(lastMessageTimestamp);
+        }
+
+        var lastMessage = new Span();
+        lastMessage.addClassNames("last-message");
+        contentDiv.add(lastMessage);
+        if (channel.lastMessage() != null) {
+            var author = new Span(channel.lastMessage().author());
+            author.addClassNames("author");
+            lastMessage.add(author, new Text(": " + truncateMessage(channel.lastMessage().message()))); 
+        } else {
+            lastMessage.setText("No messages yet");
+        }
+        return channelComponent;
+    }
+    
+    private String formatInstant(Instant instant, Locale locale) { // Formatting the Datetime
+        return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+                .withLocale(locale)
+                .format(ZonedDateTime.ofInstant(instant, ZoneId.systemDefault()));
+    }
+    
+    private String truncateMessage(String msg) { // Truncate a message to max 50 characters
+        return msg.length() > 50 ? msg.substring(0, 50) + "..." : msg;
     }
 }
