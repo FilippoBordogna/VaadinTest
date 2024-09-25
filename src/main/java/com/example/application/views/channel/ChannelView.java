@@ -20,6 +20,8 @@ import com.vaadin.flow.router.BeforeEvent;
 import com.vaadin.flow.router.HasDynamicTitle;
 import com.vaadin.flow.router.HasUrlParameter;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.spring.security.AuthenticationContext;
+import com.vaadin.flow.theme.lumo.LumoUtility;
 
 import jakarta.annotation.security.PermitAll;
 
@@ -37,14 +39,16 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
 	private String channelName; // Name of the Channel
 	private static final int HISTORY_SIZE = 20; // Shows only last 20 messages
 	private final LimitedSortedAppendOnlyList<Message> receivedMessages; // List of messages received
+	private final String currentUserName; // Current user’s username
 	
-	public ChannelView(ChatService chatService) { // Injected by Spring
+	public ChannelView(ChatService chatService, AuthenticationContext authenticationContext) { // Injected by Spring
 	    this.chatService = chatService;
 	    setSizeFull(); // Set view width and height to 100%
 	    
 	    receivedMessages = new LimitedSortedAppendOnlyList<>(HISTORY_SIZE, Comparator.comparing(Message::sequenceNumber)); // Messages will be sorted by their sequence number
 	    
 	    messageList = new MessageList(); // Built-in component for displaying messages from different users
+	    messageList.addClassNames(LumoUtility.Border.ALL); // Adds a thin border to all sides of the message list component
 	    messageList.setSizeFull();
 	    add(messageList);
 	    
@@ -53,6 +57,8 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
 	    var messageInput = new MessageInput(event -> sendMessage(event.getValue()));
 	    messageInput.setWidthFull();
 	    add(messageInput);
+	    
+	    this.currentUserName = authenticationContext.getPrincipalName().orElseThrow(); // Retrieve the principal name and stores it in the field. If there isn't throw an exception
 	}
 
     @Override
@@ -77,6 +83,13 @@ public class ChannelView extends VerticalLayout implements HasUrlParameter<Strin
             message.timestamp(),
             message.author()
         );
+        
+        item.setUserColorIndex(Math.abs(message.author().hashCode() % 7)); // The hash code can be negative and the color index is in range 0-6
+        item.addClassNames(LumoUtility.Margin.SMALL, LumoUtility.BorderRadius.MEDIUM); // Add a small margin and a medium border radius to the MessageListItem
+        if (message.author().equals(currentUserName)) {
+            item.addClassNames(LumoUtility.Background.CONTRAST_5); // Add a darker background to all message items that have been written by the current user.
+        }
+        
         return item;
     }
     
