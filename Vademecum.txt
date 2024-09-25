@@ -223,11 +223,29 @@ La classe AuthenticationContext permette di nascondere dei componenti agli utent
 	src\main\java\com\example\application\views\MainLayout.java => Aggiunta del logout
 ]
 
+
 ############################
 # BUILD A FLOW UI: STYLING #
 ############################
 
-SALTATO
+Lumo è il tema predefinito delle applicazioni Vaadin e fornisce diverse classi CSS (disponibili nella classe LumoUtility del package com.vaadin.flow.theme.lumo).
+Documentazione Styling: https://vaadin.com/docs/latest/styling
+
+Per creare un tema bisogna creare all'interno di una cartella (ad esempio src\main\frontend\themes\chat-theme) i file:
+- styles.css dove aggiungeremo stili custom e @import di linee
+- theme.json per configurare le caratteristiche dei vari temi
+
+Per ottenere il nome utente dell'utente corrente si utilizza la classe AuthenticationContext (package com.vaadin.flow.spring.security)
+
+[Vedi file 
+	src\main\frontend\themes\chat-theme\styles.css => Stili custom e @import
+	src\main\frontend\themes\chat-theme\theme.css => Caratteristiche dei temi
+	src\main\frontend\themes\chat-theme\channel-list.css => Stile della lista di canali
+	src\main\java\com\example\application\Application.java => Aggiunta del tema custom
+	src\main\java\com\example\application\views\channel\ChannelView.java => Aggiunto stile su messaggi e box + diverso stile per utente corrente/altro
+	src\main\java\com\example\application\views\lobby\LobbyView.java => Aggiunto l'ultimo messaggio e il corrispettivo Avatar Utente
+]
+
 
 ###########################################
 # BUILD A FLOW UI: USER EXPERIENCE TWEAKS #
